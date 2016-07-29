@@ -121,11 +121,10 @@ class Tree {
 	public $genus;
 	public $family;
 	public $yearPlanted;
-	public $lat;
-	public $long;
+	public $latLong;
 				
 	public function __construct($comId, $commonName, $scientificName, $genus,
-			$family, $yearPlanted, $lat, $long) {
+			$family, $yearPlanted, LatLong $latLong) {
 	
 		$this->comId = $comId;
 		$this->commonName = $commonName;
@@ -133,14 +132,11 @@ class Tree {
 		$this->genus = $genus;
 		$this->family = $family;
 		$this->yearPlanted = $yearPlanted;
-		$this->lat = $lat;
-		$this->long = $long;
+		$this->latLong = $latLong;
 		
 	}
 	
 	public function save(Logger $log, SQLite3 $db) {
-		$lat = (float)$this->lat;
-		$long = (float)$this->long;
 		$stmt = $db->prepare(<<<sql
 			INSERT INTO tree (
 				comId,
@@ -157,7 +153,7 @@ class Tree {
 				:genus,
 				:family,
 				:yearPlanted,
-				GeomFromText('POINT({$lat} {$long})')
+				GeomFromText('{$this->latLong}')
 			)
 sql
 				);
@@ -168,8 +164,6 @@ sql
 		$stmt->bindParam('genus', $this->genus);
 		$stmt->bindParam('family', $this->family);
 		$stmt->bindParam('yearPlanted', $this->yearPlanted);
-		$stmt->bindParam('lat', $this->lat);
-		$stmt->bindParam('long', $this->long);
 		
 		if ($stmt->execute() === false) {
 			throw new Exception($db->lastErrorMsg());
@@ -189,6 +183,26 @@ sql
 			)
 sql
 		);
+	}
+
+	public static function findNear(Logger $log, Sqlite3 $db, LatLong $latLong) {
+	}
+
+}
+
+class LatLong {
+	public $lat;
+	public $long;
+	
+	public function __construct($lat, $long) {
+		$this->lat = (float)$lat;
+		$this->long = (float)$long;
+	}
+	
+	public function __toString() {
+		$lat = (float)$this->lat;
+		$long = (float)$this->long;
+		return "POINT({$lat} {$long})";
 	}
 }
 
@@ -231,8 +245,7 @@ class TreeCsv {
 				$row['Genus'],
 				$row['Family'],
 				$row['Year Planted'],
-				$row['Latitude'],
-				$row['Longitude']
+				new LatLong($row['Latitude'], $row['Longitude'])
 			);
 			
 			$tree->save($log, $db);
