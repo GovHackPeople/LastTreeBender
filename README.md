@@ -1,17 +1,23 @@
 # Developing
 
-## Configuring PHP
+## Dependencies
 
-We are using sqlite with the spatialite extension in order to do spatial queries.
-Apologies for this choice, because PHP + spatialite is a pain to configure, which was not known before chosing to use it.
+We are using geo-django with a spatialite database backend.
 
-To configure PHP using spatialite:
- * [Install the php-sqlite module](http://php.net/manual/en/sqlite3.installation.php) (seems to be preconfigured in most PHP installs).
- * Download [libspatialite](http://www.gaia-gis.it/gaia-sins/)
-  + On Windows, [there are binaries for download at the bottom of this page](http://www.gaia-gis.it/gaia-sins/)
-  + On Linux, most distributions probably package `libspatialite`
- * [Configure your `php.ini` `sqlite3.extension_dir`](http://www.gaia-gis.it/spatialite-2.4.0-4/splite-php.html)
- * Ensure that the downloaded `mod_spatialite.so` (Linux) or `mod_spatialite.dll` (Windows) is available in your `sqlite3.extension_dir`.
+Install the following dependencies via your python package manager of choice (e.g. `pip`):
+ *  `django`
+
+Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/en/1.9/ref/contrib/gis/install/spatialite/) to get libspatialite installed.
+
+## Setting up database
+
+From the `server/` directory, run `python manage.py migrate`
+
+## Importing Data
+
+From the `server/` directory, run `python manage.py import-data`. This will:
+ * Download a .csv of tree data (if not already present)
+ * Insert tree data into the database
 
 # Data Sources
 
@@ -20,7 +26,6 @@ To configure PHP using spatialite:
 Source: https://data.melbourne.vic.gov.au/Environment/Melbourne-s-Urban-Forest-Tree-data/fp38-wiyy
 Source: http://melbourneurbanforestvisual.com.au/
 License: http://creativecommons.org/licenses/by/3.0/au/deed.en
-
 
 ## Outdoor furniture
 

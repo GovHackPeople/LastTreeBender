@@ -1,2 +1,5 @@
 /.netbeans
 /data
+/server/db.sqlite3
+__pycache__
+server/trees/data
