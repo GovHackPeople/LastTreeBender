@@ -9,15 +9,15 @@ Install the following dependencies via your python package manager of choice (e.
 
 Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/en/1.9/ref/contrib/gis/install/spatialite/) to get libspatialite installed.
 
-## Setting up database
+## Setting up
 
-From the `server/` directory, run `python manage.py migrate`
+All these commands are to be run from the `server/` directory.
 
-## Importing Data
-
-From the `server/` directory, run `python manage.py import-data`. This will:
- * Download a .csv of tree data (if not already present)
- * Insert tree data into the database
+* Create the database: `python manage.py migrate`
+* Create admin user: `python manage.py createsuperuser`
+* Import data: `python manage.py import-data`
+ + Download a .csv of tree data (if not already present)
+ + Insert tree data into the database
 
 # Data Sources
 
