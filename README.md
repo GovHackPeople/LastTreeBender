@@ -14,10 +14,18 @@ Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/
 ## Setting up
 
 Setting up a server:
- * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip apache2 libapache2-mod-wsgi-py3`
+ * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip python3-virtualenv uwsgi-plugin-python3 nginx`
  * `create user trees with superuser password 'trees'`;
  * `create database trees;`
  * `pip3 install django psycopg2`
+
+* `virtualenv -p python3 tree-bender`
+* `cd tree-bender && source bin/activate`
+* `pip install django psycopg2 requests uwsgi encodings`
+
+Follow [these instructions](http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html), they are very detailed and helpful. Things to note are that the .ini file you create should include:
+ * `plugin = python`
+ * Instead of `module = blah.wsgi` you should use `wsgi-file = server/wsgi.py`
 
 All these commands are to be run from the `server/` directory.
 
@@ -26,21 +34,6 @@ All these commands are to be run from the `server/` directory.
 * Import data: `python manage.py import-data`
  + Download a .csv of tree data (if not already present)
  + Insert tree data into the database
-
-Configuring Apache2 + mod_wsgi:
-* `a2enmod wsgi`
-
-```
-WSGIScriptAlias / /path/to/mysite.com/mysite/wsgi.py
-WSGIPythonPath /path/to/mysite.com
-
-<Directory /path/to/LastTreeBender/server/server/wsgi.py>
-        <Files wsgi.py>
-                Require all granted
-        </Files>
-</Directory>
-```
-
 
 # Data Sources
 
