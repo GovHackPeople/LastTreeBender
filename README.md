@@ -13,7 +13,7 @@ Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/
 ## Setting up
 
 Setting up a server:
- * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip`
+ * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip apache2 libapache2-mod-wsgi-py3`
  * `create user trees with superuser password 'trees'`;
  * `create database trees;`
  * `pip3 install django psycopg2`
@@ -25,6 +25,21 @@ All these commands are to be run from the `server/` directory.
 * Import data: `python manage.py import-data`
  + Download a .csv of tree data (if not already present)
  + Insert tree data into the database
+
+Configuring Apache2 + mod_wsgi:
+* `a2enmod wsgi`
+
+```
+WSGIScriptAlias / /path/to/mysite.com/mysite/wsgi.py
+WSGIPythonPath /path/to/mysite.com
+
+<Directory /path/to/LastTreeBender/server/server/wsgi.py>
+        <Files wsgi.py>
+                Require all granted
+        </Files>
+</Directory>
+```
+
 
 # Data Sources
 
