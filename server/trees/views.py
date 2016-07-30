@@ -1,9 +1,11 @@
 from django.http import HttpResponse, JsonResponse
+from django.template import loader
 from trees.models import random_tree
 from django.contrib.gis import geos
 
 def index(request):
-    return HttpResponse("Trees!")
+    template = loader.get_template('trees/index.html')
+    return HttpResponse(template.render({}, request))
 
 def view_map(request):
     thoughtworks = geos.Point(144.964004, -37.816399)
