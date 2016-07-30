@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.gis import geos
-from trees.models import Tree
+from trees.models import Tree, Chair
 from django.conf import settings
 from django.db import transaction
 import os
 import urllib.request
 import csv
+import re
 
 class Command(BaseCommand):
     help = 'Import initial datasets'
@@ -21,6 +22,7 @@ class Data:
         self.stdout = stdout
         self.data_dir = os.path.join(settings.BASE_DIR, "trees", "data")
         self.tree_csv = os.path.join(self.data_dir, "trees.csv")
+        self.chair_csv = os.path.join(self.data_dir, "chairs.csv")
 
     def prepare_raw_data(self):
         """
@@ -33,6 +35,16 @@ class Data:
 		
         self.prepare_tree_csv()
         self.parse_tree_csv()
+        
+        self.prepare_chair_csv()
+        self.parse_chair_csv()
+
+    def prepare_chair_csv(self):
+        if not os.path.isfile(self.chair_csv):
+            self.stdout.write("Downloading chair.csv file");
+            urllib.request.urlretrieve("https://data.melbourne.vic.gov.au/api/views/8fgn-5q6t/rows.csv?accessType=DOWNLOAD", self.chair_csv);
+        else:
+            self.stdout.write("Using already existing chair.csv file");
 
     def prepare_tree_csv(self):
         if not os.path.isfile(self.tree_csv):
@@ -40,6 +52,30 @@ class Data:
             urllib.request.urlretrieve("https://data.melbourne.vic.gov.au/api/views/fp38-wiyy/rows.csv?accessType=DOWNLOAD", self.tree_csv);
         else:
             self.stdout.write("Using already existing tree.csv file");
+            
+    @transaction.atomic
+    def parse_chair_csv(self):
+        with open(self.chair_csv, 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            i = 0;
+            for row in reader:
+                if row['ASSET_TYPE'] != "Seat":
+                    continue
+                
+                # The "CoordinateLocation comes in a string that looks like:
+                #  "(lat, long)"
+                # so we capture both of these values and parse into floats.
+                regex = re.compile("\((.*), (.*)\)")
+                match = regex.match(row['CoordinateLocation'])
+                long_lat = geos.Point(float(match.group(2)), float(match.group(1)))
+                
+                chair = Chair.objects.create(
+                    gisId=int(row['GIS_ID']),
+                    longLat=long_lat)
+                
+                i = i + 1
+                if i % 500 == 0:
+                    self.stdout.write("Inserted %d chairs" % i)
 
     @transaction.atomic
     def parse_tree_csv(self):
@@ -88,4 +124,3 @@ class Data:
                 i = i + 1
                 if i % 500 == 0:
                     self.stdout.write("Inserted %d trees" % i)
-            

@@ -2,6 +2,12 @@ from django.contrib.gis.db import models
 from django.contrib.gis import measure
 import random
 
+class Chair(models.Model):
+    
+    gisId = models.IntegerField()
+    longLat = models.PointField(null=False, blank=False, geography=True)
+
+
 class Tree(models.Model):
     
     comId = models.IntegerField()
