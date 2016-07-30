@@ -12,6 +12,12 @@ Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/
 
 ## Setting up
 
+Setting up a server:
+ * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip`
+ * `create user trees with superuser password 'trees'`;
+ * `create database trees;`
+ * `pip3 install django psycopg2`
+
 All these commands are to be run from the `server/` directory.
 
 * Create the database: `python manage.py migrate`

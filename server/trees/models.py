@@ -15,7 +15,7 @@ class Tree(models.Model):
     scientificName = models.CharField(max_length=50)
     genus = models.CharField(max_length=50)
     family = models.CharField(max_length=50)
-    yearPlanted = models.IntegerField()
+    yearPlanted = models.IntegerField(null=True)
     longLat = models.PointField(null=False, blank=False, geography=True)
 
 def random_tree(point):

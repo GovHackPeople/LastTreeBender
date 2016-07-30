@@ -32,7 +32,7 @@ class Data:
         if not os.path.isdir(self.data_dir):
             self.stdout.write("Making directory %s" % self.data_dir);
             os.mkdir(self.data_dir);
-		
+	
         self.prepare_tree_csv()
         self.parse_tree_csv()
         
@@ -110,7 +110,7 @@ class Data:
             reader = csv.DictReader(csv_file)
             i = 0;
             for row in reader:
-                year = -1 if len(row['Year Planted']) == 0 else int(row['Year Planted'])
+                year = None if len(row['Year Planted']) == 0 else int(row['Year Planted'])
                 long_lat = geos.Point(float(row['Longitude']), float(row['Latitude']))
                 tree = Tree.objects.create(
                     comId=int(row['CoM ID']),
@@ -124,3 +124,5 @@ class Data:
                 i = i + 1
                 if i % 500 == 0:
                     self.stdout.write("Inserted %d trees" % i)
+
+        
