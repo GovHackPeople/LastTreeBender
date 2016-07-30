@@ -8,15 +8,22 @@ class Chair(models.Model):
     longLat = models.PointField(null=False, blank=False, geography=True)
 
 
-class Tree(models.Model):
+class TreeType(models.Model):
     
-    comId = models.IntegerField()
     commonName = models.CharField(max_length=50)
     scientificName = models.CharField(max_length=50)
     genus = models.CharField(max_length=50)
     family = models.CharField(max_length=50)
+    scarcity = models.IntegerField() # TODO: Don't bother storing this, should be able to calculate it at runtime just fine.
+    
+
+class Tree(models.Model):
+    
+    comId = models.IntegerField()
     yearPlanted = models.IntegerField(null=True)
     longLat = models.PointField(null=False, blank=False, geography=True)
+    treeType = models.ForeignKey(TreeType, on_delete=models.CASCADE)
+
 
 def random_tree(point):
     trees = Tree.objects.filter(

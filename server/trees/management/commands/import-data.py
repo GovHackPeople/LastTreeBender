@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.gis import geos
-from trees.models import Tree, Chair
+from trees.models import Tree, TreeType, Chair
 from django.conf import settings
 from django.db import transaction
 import os
@@ -35,6 +35,7 @@ class Data:
 	
         self.prepare_tree_csv()
         self.parse_tree_csv()
+        self.calc_tree_stats();
         
         self.prepare_chair_csv()
         self.parse_chair_csv()
@@ -110,19 +111,32 @@ class Data:
             reader = csv.DictReader(csv_file)
             i = 0;
             for row in reader:
+                treeTypes = TreeType.objects.filter(commonName=row['Common Name'])
+                treeType = None
+                
+                if len(treeTypes) > 0:
+                    treeType = treeTypes[0]
+                else:
+                    treeType = TreeType.objects.create(
+                        commonName=row['Common Name'],
+                        scientificName=row['Scientific Name'],
+                        genus=row['Genus'],
+                        family=row['Family'],
+                        scarcity=0)
+                
                 year = None if len(row['Year Planted']) == 0 else int(row['Year Planted'])
                 long_lat = geos.Point(float(row['Longitude']), float(row['Latitude']))
                 tree = Tree.objects.create(
                     comId=int(row['CoM ID']),
-                    commonName=row['Common Name'],
-                    scientificName=row['Scientific Name'],
-                    genus=row['Genus'],
-                    family=row['Family'],
                     yearPlanted=year,
+                    treeType=treeType,
                     longLat=long_lat)
                 
                 i = i + 1
                 if i % 500 == 0:
                     self.stdout.write("Inserted %d trees" % i)
-
-        
+                    
+    def calc_tree_stats(self):
+        for treeType in TreeType.objects.all():
+            treeType.scarcity = Tree.objects.filter(treeType=treeType).count()
+            treeType.save()

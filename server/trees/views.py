@@ -11,8 +11,8 @@ def view_map(request):
     
     return JsonResponse({
         'metadata' : {
-            'title': tree.commonName,
-            'description': 'Also known as "%s"' % tree.scientificName
+            'title': tree.treeType.commonName,
+            'description': 'Also known as "%s"' % tree.treeType.scientificName
         },
         'source': {
             'lat': thoughtworks.y,
