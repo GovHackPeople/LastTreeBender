@@ -14,14 +14,16 @@ def view_map(request):
     return JsonResponse({
         'metadata' : {
             'title': tree.treeType.commonName,
-            'description': 'Also known as "%s"' % tree.treeType.scientificName
+            'description': 'Also known as "%s"' % tree.treeType.scientificName,
+            'imageUrl': tree.treeType.imageUrl,
+            'numTreesInMelbourne': tree.treeType.scarcity,
         },
         'source': {
             'lat': thoughtworks.y,
-            'lon': thoughtworks.x
+            'lon': thoughtworks.x,
         },
         'dest': {
             'lat': tree.longLat.y,
-            'lon': tree.longLat.x
+            'lon': tree.longLat.x,
         }
     })
