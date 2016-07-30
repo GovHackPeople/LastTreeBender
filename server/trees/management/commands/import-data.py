@@ -41,7 +41,6 @@ class Data:
         else:
             self.stdout.write("Using already existing tree.csv file");
 
-
     @transaction.atomic
     def parse_tree_csv(self):
         """
@@ -76,8 +75,8 @@ class Data:
             i = 0;
             for row in reader:
                 year = -1 if len(row['Year Planted']) == 0 else int(row['Year Planted'])
-                lat_long = geos.Point(float(row['Latitude']), float(row['Longitude']))
-                tree = Tree.objects.create(
+                lat_long = geos.GEOSGeometry('POINT(%s %s)' % (float(row['Latitude']), float(row['Longitude'])))
+                Tree.objects.create(
                     comId=int(row['CoM ID']),
                     commonName=row['Common Name'],
                     scientificName=row['Scientific Name'],
@@ -89,3 +88,4 @@ class Data:
                 i = i + 1
                 if i % 500 == 0:
                     self.stdout.write("Inserted %d trees" % i)
+                

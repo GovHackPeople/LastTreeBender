@@ -6,8 +6,9 @@ We are using geo-django with a spatialite database backend.
 
 Install the following dependencies via your python package manager of choice (e.g. `pip`):
  *  `django`
+ *  `psycopg2`
 
-Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/en/1.9/ref/contrib/gis/install/spatialite/) to get libspatialite installed.
+Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/en/1.9/ref/contrib/gis/install/postgis/) to get PostGIS installed.
 
 ## Setting up
 

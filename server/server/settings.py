@@ -27,8 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SPATIALITE_LIBRARY_PATH = 'mod_spatialite'
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -79,8 +77,12 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+         'NAME': 'trees',
+         'USER': 'trees',
+         
+         # Change this and put it in your own local_settings.py file.
+         'PASSWORD': 'trees',
     }
 }
 
