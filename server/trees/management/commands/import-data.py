@@ -1,11 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.gis import geos
-from trees.models import Tree, TreeType, Chair
+from trees.models import Tree, TreeType, TreeTypeImage, Chair
 from django.conf import settings
 from django.db import transaction
 import os
 import urllib.request
+import requests
 import csv
+import json
 import re
 
 class Command(BaseCommand):
@@ -137,6 +139,100 @@ class Data:
                     self.stdout.write("Inserted %d trees" % i)
                     
     def calc_tree_stats(self):
-        for treeType in TreeType.objects.all():
+        i = 0
+        types = TreeType.objects.all()
+        for treeType in types:
+            i = i + 1
+            data = WikiImageData(treeType)
             treeType.scarcity = Tree.objects.filter(treeType=treeType).count()
+            treeType.imageUrl = data.url
+            treeType.license = data.license
+            treeType.artist = data.artist
+            treeType.description = data.description
             treeType.save()
+            print ("%d/%d images scraped from wiki" % (i, len(types)))
+
+        
+class WikiImageData:
+    """
+    There is some good discussion about etiquette when requesting data from
+    the Wikipedia API here: https://www.mediawiki.org/wiki/API:Etiquette
+    They are quite generous, but we make sure to use a custom UserAgent in
+    return, and not do requests in parallel.
+    """
+    
+    def __init__(self, tree_type):
+        self.tree_type = tree_type
+        self.url = None
+        self.license = None
+        self.artist = None
+        self.description = None
+        self.request_headers = {
+            'User-Agent': 'GovHack 2016 Project: The Last Tree Bender (https://2016.hackerspace.govhack.org/content/last-tree-bender)',
+        }
+        self.__load()
+        
+    def __load(self):
+        page_info = self.__load_main_info()
+        
+        if page_info != None:
+            self.__load_image_name(page_info)
+        
+    def __load_image_name(self, page_info):
+        if "images" not in page_info or len(page_info["images"]) == 0:
+            return
+        
+        image_title = page_info["images"][0]["title"]
+        self.__load_image_info(image_title)
+
+        
+    def __load_image_info(self, image_title):
+        url = urllib.parse.urlunparse((
+            'https',
+            'en.wikipedia.org',
+            '/w/api.php',
+            '',
+            'action=query&prop=imageinfo&iiprop=extmetadata|url&format=json&titles=%s' % (image_title),
+            ''))
+        
+        response = json.loads(requests.get(url, self.request_headers).text)
+        pages = response["query"]["pages"]
+        page = None
+        for img in pages:
+            page = pages[img]
+            break
+        
+        if page == None:
+            return
+        
+        if len(page["imageinfo"]) == 0:
+            return
+        
+        image_info = page["imageinfo"][0]
+        metadata = image_info["extmetadata"]
+        
+        self.url = image_info["url"]
+        self.license = None if "LicenseShortName" not in metadata else metadata["LicenseShortName"]["value"]
+        self.artist = None if "Artist" not in metadata else metadata["Artist"]["value"]
+        self.description = None if "ImageDescription" not in metadata else metadata["ImageDescription"]["value"]
+
+        
+    def __load_main_info(self):
+        prop = 'info%7Cimages' # Separate this so that %7 doesn't get treated like a format argument (ala %s)
+        url = urllib.parse.urlunparse((
+            'https',
+            'en.wikipedia.org',
+            '/w/api.php',
+            '',
+            'action=query&format=json&prop=%s&titles=%s' % (prop, self.tree_type.scientificName),
+            ''))
+
+        response = json.loads(requests.get(url, self.request_headers).text)
+        pages = response["query"]["pages"]
+        
+        if len(pages) == 0:
+            return None
+        
+        for page_id in pages:
+            return pages[page_id]
+
