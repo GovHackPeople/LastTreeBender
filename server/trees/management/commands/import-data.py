@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.gis import geos
-from trees.models import Tree, TreeType, TreeTypeImage, Chair
+from trees.models import Tree, TreeType, Chair
 from django.conf import settings
 from django.db import transaction
 import os
@@ -197,7 +197,9 @@ class WikiImageData:
         
         response = json.loads(requests.get(url, self.request_headers).text)
         pages = response["query"]["pages"]
-        page = None
+        if len(pages.keys()) == 0:
+            return
+        
         for img in pages:
             page = pages[img]
             break
@@ -205,7 +207,7 @@ class WikiImageData:
         if page == None:
             return
         
-        if len(page["imageinfo"]) == 0:
+        if "imageinfo" not in page or len(page["imageinfo"]) == 0:
             return
         
         image_info = page["imageinfo"][0]
