@@ -76,14 +76,16 @@ class Data:
             i = 0;
             for row in reader:
                 year = -1 if len(row['Year Planted']) == 0 else int(row['Year Planted'])
-                Tree.objects.create(
+                lat_long = geos.Point(float(row['Latitude']), float(row['Longitude']))
+                tree = Tree.objects.create(
                     comId=int(row['CoM ID']),
                     commonName=row['Common Name'],
                     scientificName=row['Scientific Name'],
                     genus=row['Genus'],
                     family=row['Family'],
                     yearPlanted=year,
-                    latLong=geos.Point(float(row['Latitude']), float(row['Longitude'])))
+                    latLong=lat_long)
+                
                 i = i + 1
                 if i % 500 == 0:
                     self.stdout.write("Inserted %d trees" % i)

@@ -18,5 +18,5 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^import/$', views.find_trees, name='import'),
+    url(r'^map/$', views.view_map, name='map'),
 ]
