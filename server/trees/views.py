@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import os
+from trees.models import Tree
+from django.contrib.gis import geos
 
 def index(request):
     return HttpResponse("Trees!")
 
-def importData(request):
-    os.mkdir()
-    return HttpResponse("Import done")
+def find_trees(request):
+    return HttpResponse("Tree")
