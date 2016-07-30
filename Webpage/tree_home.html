@@ -11,6 +11,9 @@
     <link href="css/template.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/TreeBender.png" />
 	<title>The Last Tree Bender</title>
+<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+
 </head>
 
 <body>
@@ -94,7 +97,9 @@
       <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
     </div><!-- /.carousel -->
 
-
+    <div class = 'container'>
+      <div id='map'></div>
+    </div>
 
     <!-- Marketing messaging and featurettes
     ================================================== -->
@@ -135,13 +140,17 @@
 
     </div><!-- /.container -->
 
-
-
     <!-- JavaScript -->
     <!-- Include latest jQuery -->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <!-- Include all the compiled and minified Bootstrap plugins -->
     <script src="js/bootstrap.min.js"></script>
+
+  <script>
+  L.mapbox.accessToken = 'pk.eyJ1IjoidWx5YW5vdiIsImEiOiJjaXI4bjZrNW8wMHl5Z2ZtOWZ0eWU1MTh4In0.cM4qegsoWuTyRNlPdHpmrA';
+  var map = L.mapbox.map('map', 'mapbox.streets')
+    .setView([-37.8132, 144.963], 15);
+  </script>
 </body>
 
 <footer>
