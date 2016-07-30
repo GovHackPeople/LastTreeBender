@@ -13,6 +13,12 @@ Ensure you follow the [instructions for your OS](https://docs.djangoproject.com/
 
 ## Setting up
 
+Do one of either:
+ * `cp server/settings_local.py.dev_example server/settings_local.py`
+ * `cp server/settings_local.py.prod_example server/settings_local.py`
+
+And edit the resulting `server/settings_local.py` file appropriately.
+
 Setting up a server:
  * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip python3-virtualenv uwsgi-plugin-python3 nginx`
  * `create user trees with superuser password 'trees'`;

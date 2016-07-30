@@ -2,14 +2,18 @@ DEBUG = True
 
 SECRET_KEY = 'rjnl0632elnj6t#kb)=8ojg2&g3-15v16)-09oa9h&q#30qawh'
 
+# https://developers.google.com/maps/documentation/directions/intro
+GOOGLE_MAPS_API = ''
+
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-         'NAME': 'trees',
-         'USER': 'trees',
-         'PASSWORD': 'trees',
+        'HOST': 'localhost',
+        'NAME': 'trees',
+        'USER': 'trees',
+        'PASSWORD': 'trees',
     }
 }
