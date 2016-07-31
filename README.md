@@ -23,7 +23,7 @@ Setting up a server:
  * `sudo apt-get install postgresql postgis python-pip libpq-dev python3 python3-pip python3-virtualenv uwsgi-plugin-python3 nginx`
  * `create user trees with superuser password 'trees'`;
  * `create database trees;`
- * `pip3 install django psycopg2`
+ * `pip3 install django psycopg2 googlemaps`
 
 * `virtualenv -p python3 tree-bender`
 * `cd tree-bender && source bin/activate`

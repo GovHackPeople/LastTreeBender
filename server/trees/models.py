@@ -33,8 +33,8 @@ class Tree(models.Model):
 
 def random_tree(point):
     trees = Tree.objects.filter(
-        longLat__distance_gt=(point, measure.Distance(m=200)),
-        longLat__distance_lt=(point, measure.Distance(m=400))
+        longLat__distance_gt=(point, measure.Distance(m=400)),
+        longLat__distance_lt=(point, measure.Distance(m=600))
     ).exclude(
         treeType__imageUrl=None,
     ).exclude(

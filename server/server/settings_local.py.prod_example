@@ -3,7 +3,8 @@ DEBUG = False
 SECRET_KEY = 'TODO: Replace with production SECRET_KEY'
 
 # https://developers.google.com/maps/documentation/directions/intro
-GOOGLE_MAPS_API = 'TODO: Replace with Google Maps API key'
+GOOGLE_MAPS_DIRECTIONS_API = ''
+GOOGLE_MAPS_GEOCODING_API = ''
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
