@@ -18,5 +18,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^info/$', views.get_info, name='info'),
     url(r'^map/$', views.view_map, name='map'),
 ]

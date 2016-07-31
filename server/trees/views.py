@@ -10,6 +10,10 @@ def index(request):
     return HttpResponse(template.render({}, request))
 
 def view_map(request):
+    template = loader.get_template('trees/map.html')
+    return HttpResponse(template.render({}, request))
+
+def get_info(request):
     address = __lookup_lat_long(request.GET['address'])
     tree = random_tree(address)
     directions = __get_directions(address, tree.longLat)

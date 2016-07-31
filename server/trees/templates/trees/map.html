@@ -1,0 +1,182 @@
+<html>
+    
+    <head>
+        <link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+    </head>
+    <body>
+        
+        <div id="map" style="border: solid 1px red; min-width: 50px; max-width: 550px; min-height: 550px; margin: auto;"></div>
+        
+        <script src='https://code.jquery.com/jquery-1.12.4.min.js'></script>
+        <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+        <script>
+            (function() {
+                
+                var mockData = {
+                "bounds":{
+                   "northeast":{
+                      "lng":144.9641338,
+                      "lat":-37.8122473
+                   },
+                   "southwest":{
+                      "lng":144.9596861,
+                      "lat":-37.81636230000001
+                   }
+                },
+                "source":{
+                   "lat":-37.816399,
+                   "lon":144.964004
+                },
+                "metadata":{
+                   "imageUrl":"https://upload.wikimedia.org/wikipedia/commons/c/cc/Aoba-dori_Ave_2.JPG",
+                   "title":"Japanese Zelkova",
+                   "description":"Also known as \"Zelkova serrata\"",
+                   "numTreesInMelbourne":637
+                },
+                "dest":{
+                   "lat":-37.8126574750958,
+                   "lon":144.959634462005
+                },
+                "steps":[
+                   {
+                      "end_location":{
+                         "lng":144.9621686,
+                         "lat":-37.8122473
+                      },
+                      "polyline":{
+                         "points":"f_yeFyhxsZ[JiBp@{Ah@e@PG@s@Vg@Py@ZC@_A\\wAf@g@Pk@RuAf@i@PQRMH"
+                      },
+                      "distance":{
+                         "text":"0.5 km",
+                         "value":490
+                      },
+                      "html_instructions":"Head <b>north</b> on <b>Elizabeth St</b> toward <b>Collins St</b>",
+                      "travel_mode":"WALKING",
+                      "start_location":{
+                         "lng":144.9641338,
+                         "lat":-37.81636230000001
+                      },
+                      "duration":{
+                         "text":"6 mins",
+                         "value":371
+                      }
+                   },
+                   {
+                      "distance":{
+                         "text":"0.2 km",
+                         "value":220
+                      },
+                      "maneuver":"turn-left",
+                      "polyline":{
+                         "points":"pexeFq|wsZH`@l@dDVlAZvALj@Jh@DN"
+                      },
+                      "end_location":{
+                         "lng":144.9598281,
+                         "lat":-37.8129466
+                      },
+                      "html_instructions":"Turn <b>left</b> onto <b>Lonsdale St</b>",
+                      "travel_mode":"WALKING",
+                      "start_location":{
+                         "lng":144.9621686,
+                         "lat":-37.8122473
+                      },
+                      "duration":{
+                         "text":"4 mins",
+                         "value":212
+                      }
+                   },
+                   {
+                      "distance":{
+                         "text":"36 m",
+                         "value":36
+                      },
+                      "maneuver":"turn-right",
+                      "polyline":{
+                         "points":"|ixeF}mwsZe@PUH"
+                      },
+                      "end_location":{
+                         "lng":144.9596861,
+                         "lat":-37.81264609999999
+                      },
+                      "html_instructions":"Turn <b>right</b> onto <b>Queen St</b>",
+                      "travel_mode":"WALKING",
+                      "start_location":{
+                         "lng":144.9598281,
+                         "lat":-37.8129466
+                      },
+                      "duration":{
+                         "text":"1 min",
+                         "value":30
+                      }
+                   }
+                ]
+                }
+                
+                $.get('/info', {address: "Thoughtworks, Melbourne, Vic"}, function(response) {
+                
+                    mockData = response;
+                    console.log(mockData)
+                
+                    var southWest = L.latLng(mockData.bounds.southwest.lat, mockData.bounds.southwest.lng)
+                    var northEast = L.latLng(mockData.bounds.northeast.lat, mockData.bounds.northeast.lng)
+
+                    var bounds = L.latLngBounds(southWest, northEast)
+
+                    L.mapbox.accessToken = 'pk.eyJ1IjoidWx5YW5vdiIsImEiOiJjaXI4bjZrNW8wMHl5Z2ZtOWZ0eWU1MTh4In0.cM4qegsoWuTyRNlPdHpmrA'
+
+                    var map = L.map('map', {
+                        layers: [L.mapbox.tileLayer('mapbox.streets')],
+                        center: bounds.getCenter(),
+                        zoom: 16,
+                        maxBounds: bounds
+                    });
+
+                    var addMarker = function(location) {
+                        L.marker([location.lat, location.lon], {
+                            icon: L.mapbox.marker.icon({
+                                'marker-size': 'large',
+                                'marker-color': '#444'
+                            })
+                        }).addTo(map);
+                    }
+
+                    addMarker(mockData.source)
+                    addMarker(mockData.dest)
+
+                    var steps = mockData.steps.map(function(step) {
+                        return [step.start_location.lat, step.start_location.lng];
+                    });
+
+                    var last = mockData.steps[mockData.steps.length - 1];
+                    steps.push([
+                        last.end_location.lat,
+                        last.end_location.lng
+                    ]);
+
+                    L.polyline(
+                        steps,
+                        {weight: 20, opacity: 0.3, color: "#000"}
+                    ).addTo(map);
+
+                    L.polyline(
+                        steps,
+                        {weight: 3, opacity: 0.75 ,color: "#000"}
+                    ).addTo(map);
+
+                    // TODO
+                    
+                    var metadata = mockData.metadata;
+                    
+                    /*"metadata":{
+                       "imageUrl":"https://upload.wikimedia.org/wikipedia/commons/c/cc/Aoba-dori_Ave_2.JPG",
+                       "title":"Japanese Zelkova",
+                       "description":"Also known as \"Zelkova serrata\"",
+                       "numTreesInMelbourne":637
+                    }*/
+
+                })
+            })();
+        </script>
+    </body>
+    
+</html>
